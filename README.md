@@ -1,29 +1,22 @@
 <h1 align="center">Go_Frontend</h1>
 <p align="center">一个实现 Emby 服务播放前后端分离的程序套件。</p>
 
-![Commit Activity](https://img.shields.io/github/commit-activity/m/hsuyelin/PiliPili_Frontend/main) ![Top Language](https://img.shields.io/github/languages/top/hsuyelin/PiliPili_Frontend) ![Github License](https://img.shields.io/github/license/hsuyelin/PiliPili_Frontend)
-
-
-[English Version](https://github.com/hsuyelin/PiliPili_Frontend/blob/main/README.md)
-
 ## 简介
 
-1. 本项目是实现 Emby 媒体服务播放前后端分离的前端程序，需要与播放分离后端 [PiliPili Playback Backend](https://github.com/hsuyelin/PiliPili_Backend) 配套使用。
+1. 本项目是实现 Emby 媒体服务播放前后端分离的前端程序，需要与播放分离后端 [Go Playback Backend](https://github.com/Moxi007/Go_Backend) 配套使用。
 2. 本程序很大程度上基于 [YASS-Frontend](https://github.com/FacMata/YASS-Frontend)。原版是用 `Python` 实现的，为了获得更好的兼容性，已重写为 `Go` 版本并在其基础上进行了优化，使其更加易用。
 
 ------
 
 ## 原理
 
-1. 使用特定的 `nginx` 配置（参考 [nginx.conf](https://github.com/hsuyelin/PiliPili_Frontend/blob/main/nginx/nginx.conf)）将 Emby 播放链接重定向到指定端口。
+1. 使用特定的 `nginx` 配置（参考 [nginx.conf](https://github.com/Moxi007/Go_Frontend/blob/main/nginx/nginx.conf)）将 Emby 播放链接重定向到指定端口。
 2. 程序监听该端口接收到的请求，并提取 `MediaSourceId` 和 `ItemId`。
 3. 向 Emby 服务请求对应的文件相对路径（`EmbyPath`）。
 4. **确定后端**：将 `EmbyPath` 与配置的 `Backends` 列表进行匹配（最长前缀匹配），以选择合适的流媒体服务器并生成相对路径。
 5. 通过将配置中的 `Encipher` 值与过期时间 (`expireAt`) 进行加密来生成签名 `signature`。
 6. 将后端播放地址 (`backendURL`) 与匹配到的相对路径和 `signature` 进行拼接。
 7. 将播放请求重定向到生成的 URL，交由后端处理。
-
-![sequenceDiagram](https://github.com/hsuyelin/PiliPili_Frontend/blob/main/img/sequenceDiagram.png)
 
 ------
 
@@ -108,3 +101,97 @@ SpecialMedias:
      mediaPath: "specialMedia/chinesenewyeareve"
      itemId: "chinesenewyeareve-item-id"
      mediaSourceID: "chinesenewyeareve-media-source-id"
+```
+------
+
+## 如何使用
+
+### 1. Docker 安装 (推荐)
+
+#### 1.1 创建目录
+
+```shell
+mkdir -p /data/docker/go_frontend
+```
+
+#### 1.2 创建配置文件
+
+```shell
+cd /data/docker/go_frontend
+mkdir -p config && cd config
+```
+
+将 config.yaml 复制到 config 文件夹中，并根据实际情况编辑。
+
+#### 创建 docker-compose.yaml
+
+返回 /data/docker/pilipili_backend 目录，将 docker-compose.yml 复制到该目录下。
+
+#### 1.4 启动容器
+
+```shell
+docker-compose pull && docker-compose up -d
+```
+
+### 2. 手动安装
+
+#### 2.1 安装 Go 环境
+
+##### 2.1.1 卸载旧版本 (可选)
+
+```bash
+rm -rf /usr/local/go
+```
+
+##### 2.1.2 下载并安装
+
+```bash
+wget -q -O /tmp/go.tar.gz https://go.dev/dl/go1.23.5.linux-amd64.tar.gz && tar -C /usr/local -xzf /tmp/go.tar.gz && rm /tmp/go.tar.gz
+```
+
+##### 2.1.3 配置环境变量
+
+```bash
+echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc && source ~/.bashrc
+```
+
+##### 2.1.4 验证安装
+
+```bash
+go version 
+# 预期输出类似: go version go1.23.5 linux/amd64
+```
+
+------
+
+#### 2.2 下载代码
+
+```bash
+git clone [https://github.com/Moxi007/Go_Frontend/.git](https://github.com/Moxi007/Go_Frontend/.git) /data/emby_backend
+```
+
+------
+
+#### 2.3 编译与配置
+
+进入目录并编辑`config.yaml`：
+
+```shell
+cd /data/emby_backend
+vi config.yaml
+```
+编译二进制文件（推荐，比 go run 性能更好）：
+
+```shell
+go build -ldflags="-s -w" -o pilipili_backend main.go
+```
+
+#### 2.4 运行程序
+
+```shell
+# 前台运行测试
+./pilipili_backend config.yaml
+
+# 后台运行
+nohup ./pilipili_backend config.yaml > streamer.log 2>&1 &
+```
