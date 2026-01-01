@@ -4,18 +4,18 @@ Encipher: "vPQC5LWCN2CW2opz"
 Emby:
   url: "http://127.0.0.1"
   port: 8096
-  apiKey: "YOUR_EMBY_API_KEY"
+  apiKey: "apikey"
 
 # 多后端配置列表
 Backends:
   # 顺序不重要，程序会自动优先匹配最长路径
-  - name: "Anime"
-    url: "https://stream-anime.example.com/stream"
-    path: "/mnt/anime"
+  - name: "Media-A"
+    url: "https://stream-gd.example.com/stream"
+    path: "/Media-A"
 
-  - name: "Movies"
-    url: "https://stream-movies.example.com/stream"
-    path: "/mnt/movies"
+  - name: "115_c"
+    url: "https://stream-gd.example.com/stream"
+    path: "/media/115_c"
 
   - name: "GoogleDrive"
     url: "https://stream-gd.example.com/stream"
