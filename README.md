@@ -1,69 +1,69 @@
 <h1 align="center">Go_Frontend</h1>
-<p align="center">A program suite for separating the frontend and backend of Emby service playback.</p>
+<p align="center">一个实现 Emby 服务播放前后端分离的程序套件。</p>
 
 ![Commit Activity](https://img.shields.io/github/commit-activity/m/hsuyelin/PiliPili_Frontend/main) ![Top Language](https://img.shields.io/github/languages/top/hsuyelin/PiliPili_Frontend) ![Github License](https://img.shields.io/github/license/hsuyelin/PiliPili_Frontend)
 
 
-[中文版本](https://github.com/hsuyelin/PiliPili_Frontend/blob/main/README_CN.md)
+[English Version](https://github.com/hsuyelin/PiliPili_Frontend/blob/main/README.md)
 
-## Introduction
+## 简介
 
-1. This project is a frontend application for separating Emby media service playback into frontend and backend components. It works in conjunction with the playback backend [PiliPili Playback Backend](https://github.com/hsuyelin/PiliPili_Backend).
-2. This program is largely based on [YASS-Frontend](https://github.com/FacMata/YASS-Frontend). The original version was implemented in `Python`. To achieve better compatibility, it has been rewritten in `Go` and optimized to enhance usability.
+1. 本项目是实现 Emby 媒体服务播放前后端分离的前端程序，需要与播放分离后端 [PiliPili Playback Backend](https://github.com/hsuyelin/PiliPili_Backend) 配套使用。
+2. 本程序很大程度上基于 [YASS-Frontend](https://github.com/FacMata/YASS-Frontend)。原版是用 `Python` 实现的，为了获得更好的兼容性，已重写为 `Go` 版本并在其基础上进行了优化，使其更加易用。
 
 ------
 
-## Principles
+## 原理
 
-1. Use a specific `nginx` configuration (refer to [nginx.conf](https://github.com/hsuyelin/PiliPili_Frontend/blob/main/nginx/nginx.conf)) to redirect Emby playback URLs to a designated port.
-2. The program listens for requests arriving at the port and extracts the `MediaSourceId` and `ItemId`.
-3. Request the corresponding file's relative path (`EmbyPath`) from the Emby service.
-4. **Determine Backend**: Match the `EmbyPath` against the configured `Backends` list (longest prefix match) to select the appropriate streaming server and generate the relative path.
-5. Generate a signed URL by encrypting the configuration's `Encipher` value with the expiration time (`expireAt`) to create a `signature`.
-6. Concatenate the backend playback URL (`backendURL`) with the matched relative path and `signature`.
-7. Redirect the playback request to the generated URL for backend handling.
+1. 使用特定的 `nginx` 配置（参考 [nginx.conf](https://github.com/hsuyelin/PiliPili_Frontend/blob/main/nginx/nginx.conf)）将 Emby 播放链接重定向到指定端口。
+2. 程序监听该端口接收到的请求，并提取 `MediaSourceId` 和 `ItemId`。
+3. 向 Emby 服务请求对应的文件相对路径（`EmbyPath`）。
+4. **确定后端**：将 `EmbyPath` 与配置的 `Backends` 列表进行匹配（最长前缀匹配），以选择合适的流媒体服务器并生成相对路径。
+5. 通过将配置中的 `Encipher` 值与过期时间 (`expireAt`) 进行加密来生成签名 `signature`。
+6. 将后端播放地址 (`backendURL`) 与匹配到的相对路径和 `signature` 进行拼接。
+7. 将播放请求重定向到生成的 URL，交由后端处理。
 
 ![sequenceDiagram](https://github.com/hsuyelin/PiliPili_Frontend/blob/main/img/sequenceDiagram.png)
 
 ------
 
-## Features
+## 功能
 
-- **Compatible with all Emby server versions**.
-- **Multi-Backend Support**: Configure multiple storage backends with intelligent routing based on file paths (longest prefix matching).
-- **High Performance**:
-    - **Singleflight**: Prevents cache stampede (thundering herd problem) for hot videos, protecting the Emby server.
-    - **HTTP Keep-Alive**: Reuses TCP connections to the Emby API, reducing latency and port usage.
-- **Supports high concurrency**, handling multiple requests simultaneously.
-- **Support for deploying Emby server with `strm`.**
-- **Request caching**, enabling fast responses for identical `MediaSourceId` and `ItemId` requests, reducing playback startup time.
-- **Link signing**, where the frontend generates and the backend verifies the signature. Mismatched signatures result in a `401 Unauthorized` error.
-- **Link expiration**, with an expiration time embedded in the signature to prevent unauthorized usage and continuous theft via packet sniffing.
+- **兼容所有版本的 Emby 服务器**。
+- **多后端支持**：配置多个存储后端，基于文件路径（最长前缀匹配）进行智能路由。
+- **高性能**：
+    - **Singleflight**：防止热点视频的缓存击穿（惊群效应），保护 Emby 服务器。
+    - **HTTP Keep-Alive**：复用与 Emby API 的 TCP 连接，降低延迟并减少端口占用。
+- **支持高并发**，可同时处理多个请求。
+- **支持部署了 `strm` 的 Emby 服务器**。
+- **请求缓存**，对相同的 `MediaSourceId` 和 `ItemId` 请求进行快速响应，减少起播时间。
+- **链接签名**，由前端生成签名，后端验证签名。签名不匹配将导致 `401 Unauthorized` 错误。
+- **链接过期**，签名中嵌入了过期时间，防止恶意抓包导致链接被长期盗用。
 
 ------
 
-## Configuration File
+## 配置文件
 
 ```yaml
 # Logging configuration
-LogLevel: "INFO" # Log level (e.g., info, debug, warn, error)
+LogLevel: "INFO" # 日志级别 (例如: info, debug, warn, error)
 
 # Encryption settings
-Encipher: "vPQC5LWCN2CW2opz" # Key used for encryption and obfuscation
+Encipher: "vPQC5LWCN2CW2opz" # 用于加密和混淆的密钥
 
 # Emby server configuration
 Emby:
-  url: "[http://127.0.0.1](http://127.0.0.1)" # The base URL for the Emby server
+  url: "[http://127.0.0.1](http://127.0.0.1)" # Emby 服务器的基础 URL
   port: 8096
-  apiKey: "6a15d65893024675ba89ffee165f8f1c"  # API key for accessing the Emby server
+  apiKey: "6a15d65893024675ba89ffee165f8f1c"  # 用于访问 Emby 服务器的 API 密钥
 
-# Multiple Backend Configuration
-# The program will match the Emby file path against the 'path' of each backend.
-# It automatically prioritizes the longest matching path prefix.
+# 多后端配置 (Multiple Backend Configuration)
+# 程序会将 Emby 文件路径与每个后端的 'path' 进行匹配。
+# 它会自动优先匹配最长的路径前缀。
 Backends:
   - name: "Anime Drive"
-    url: "[https://stream-anime.example.com/stream](https://stream-anime.example.com/stream)"  # The public streaming URL for this backend
-    path: "/mnt/anime"                               # The absolute path prefix in Emby
+    url: "[https://stream-anime.example.com/stream](https://stream-anime.example.com/stream)"  # 该后端的公开流媒体 URL
+    path: "/mnt/anime"                               # Emby 中的绝对路径前缀
 
   - name: "Movie Drive"
     url: "[https://stream-movie.example.com/stream](https://stream-movie.example.com/stream)"
@@ -74,7 +74,7 @@ Backends:
     path: "/mnt/share"
 
 # Streaming configuration
-PlayURLMaxAliveTime: 21600 # Maximum lifetime of the play URL in seconds (e.g., 6 hours)
+PlayURLMaxAliveTime: 21600 # 播放链接的最大存活时间，单位秒 (例如: 6 小时)
 
 # Server configuration
 Server:
@@ -82,7 +82,7 @@ Server:
 
 # Special medias configuration
 SpecialMedias:
-   # The key values below can be filled as needed. If not required, they can be left empty.
+   # 下面的键值可以根据需要填写。如果不需要，可以留空。
    - key: "MediaMissing"
      name: "Default media for missing cases"
      mediaPath: "specialMedia/mediaMissing"
