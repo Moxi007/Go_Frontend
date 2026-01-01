@@ -167,7 +167,7 @@ go version
 #### 2.2 下载代码
 
 ```bash
-git clone [https://github.com/Moxi007/Go_Frontend/.git](https://github.com/Moxi007/Go_Frontend/.git) /data/emby_backend
+git clone https://github.com/Moxi007/Go_Frontend/.git /data/emby_backend
 ```
 
 ------
