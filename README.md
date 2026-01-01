@@ -46,7 +46,7 @@ Encipher: "vPQC5LWCN2CW2opz" # 用于加密和混淆的密钥
 
 # Emby server configuration
 Emby:
-  url: "[http://127.0.0.1](http://127.0.0.1)" # Emby 服务器的基础 URL
+  url: "http://127.0.0.1" # Emby 服务器的基础 URL
   port: 8096
   apiKey: "6a15d65893024675ba89ffee165f8f1c"  # 用于访问 Emby 服务器的 API 密钥
 
