@@ -167,7 +167,7 @@ go version
 #### 2.2 下载代码
 
 ```bash
-git clone https://github.com/Moxi007/Go_Frontend.git /data/emby_backend
+git clone https://github.com/Moxi007/Go_Frontend.git /data/emby_frontend
 ```
 
 ------
@@ -177,21 +177,21 @@ git clone https://github.com/Moxi007/Go_Frontend.git /data/emby_backend
 进入目录并编辑`config.yaml`：
 
 ```shell
-cd /data/emby_backend
+cd /data/emby_frontend
 vi config.yaml
 ```
 编译二进制文件（推荐，比 go run 性能更好）：
 
 ```shell
-go build -ldflags="-s -w" -o pilipili_backend main.go
+go build -ldflags="-s -w" -o go_frontend main.go
 ```
 
 #### 2.4 运行程序
 
 ```shell
 # 前台运行测试
-./pilipili_backend config.yaml
+./pilipili_frontend config.yaml
 
 # 后台运行
-nohup ./pilipili_backend config.yaml > streamer.log 2>&1 &
+nohup ./go_frontend config.yaml > stream.log 2>&1 &
 ```
