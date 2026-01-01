@@ -1,4 +1,3 @@
-// Package api provides functions to interact with the Emby API.
 package api
 
 import (
@@ -12,26 +11,32 @@ import (
 	"time"
 )
 
-// EmbyAPI provides methods to interact with the Emby API.
+// 全局复用 Client，避免高并发下端口耗尽
+var globalClient = &http.Client{
+	Timeout: 10 * time.Second,
+	Transport: &http.Transport{
+		MaxIdleConns:        1000,
+		MaxIdleConnsPerHost: 100,
+		IdleConnTimeout:     90 * time.Second,
+	},
+}
+
 type EmbyAPI struct {
 	EmbyURL string
 	APIKey  string
 	Client  *http.Client
 }
 
-// NewEmbyAPI initializes a new EmbyAPI instance.
 func NewEmbyAPI() *EmbyAPI {
 	cfg := config.GetConfig()
 	return &EmbyAPI{
 		EmbyURL: config.GetFullEmbyURL(),
 		APIKey:  cfg.EmbyAPIKey,
-		Client: &http.Client{
-			Timeout: 10 * time.Second,
-		},
+		Client:  globalClient, // 引用全局 Client
 	}
 }
 
-// GetMediaPath fetches the media file path from Emby using the provided item ID and MediaSourceID.
+// GetMediaPath 保持原有逻辑，但底层使用了复用的 Client
 func (api *EmbyAPI) GetMediaPath(itemID, mediaSourceID string) (string, error) {
 	url := fmt.Sprintf("%s/Items/%s/PlaybackInfo?MediaSourceId=%s&api_key=%s",
 		api.EmbyURL, itemID, mediaSourceID, api.APIKey)
@@ -43,12 +48,7 @@ func (api *EmbyAPI) GetMediaPath(itemID, mediaSourceID string) (string, error) {
 		logger.Error("Failed to fetch media path: %v", err)
 		return "", err
 	}
-
-	defer func() {
-		if err := resp.Body.Close(); err != nil {
-			logger.Error("Failed to close response body: %v", err)
-		}
-	}()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		logger.Error("Received non-200 response from Emby: %d", resp.StatusCode)
@@ -57,7 +57,6 @@ func (api *EmbyAPI) GetMediaPath(itemID, mediaSourceID string) (string, error) {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		logger.Error("Error reading response body: %v", err)
 		return "", err
 	}
 
@@ -68,7 +67,6 @@ func (api *EmbyAPI) GetMediaPath(itemID, mediaSourceID string) (string, error) {
 		} `json:"MediaSources"`
 	}
 	if err := json.Unmarshal(body, &result); err != nil {
-		logger.Error("Error parsing JSON response: %v", err)
 		return "", err
 	}
 
@@ -79,6 +77,5 @@ func (api *EmbyAPI) GetMediaPath(itemID, mediaSourceID string) (string, error) {
 		}
 	}
 
-	logger.Warn("MediaSourceId not found in response")
 	return "", errors.New("media source not found")
 }
