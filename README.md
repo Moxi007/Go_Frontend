@@ -190,7 +190,7 @@ go build -ldflags="-s -w" -o go_frontend main.go
 
 ```shell
 # 前台运行测试
-./pilipili_frontend config.yaml
+./go_frontend config.yaml
 
 # 后台运行
 nohup ./go_frontend config.yaml > stream.log 2>&1 &
