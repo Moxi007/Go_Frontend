@@ -1,7 +1,7 @@
 package config
 
 import (
-	"PiliPili_Frontend/util"
+	"Go_Frontend/util"
 	"github.com/spf13/viper"
 	"sort"
 )
