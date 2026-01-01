@@ -1,10 +1,10 @@
 package stream
 
 import (
-	"PiliPili_Frontend/api"
-	"PiliPili_Frontend/config"
-	"PiliPili_Frontend/logger"
-	"PiliPili_Frontend/util"
+	"Go_Frontend/api"
+	"Go_Frontend/config"
+	"Go_Frontend/logger"
+	"Go_Frontend/util"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/sync/singleflight" // 需 go get
