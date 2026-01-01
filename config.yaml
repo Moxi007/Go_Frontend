@@ -1,64 +1,33 @@
-# Logging configuration
-LogLevel: "INFO" 
-
-# Encryption settings
+LogLevel: "INFO"
 Encipher: "vPQC5LWCN2CW2opz"
 
-# Emby server configuration
 Emby:
-  url: "http://127.0.0.1" 
+  url: "http://127.0.0.1"
   port: 8096
-  apiKey: "6a15d65893024675ba89ffee165f8f1c" 
+  apiKey: "YOUR_EMBY_API_KEY"
 
-# --- 修改: 多后端配置 ---
-# 这里是一个数组，可以配置多个后端。程序会按顺序尝试匹配。
+# 多后端配置列表
 Backends:
-  # 后端 1: 动漫
-  - name: "AnimeBackend"
-    url: "https://stream-anime.example.com/stream" # 该资源的推流地址
-    path: "/mnt/anime"                             # Emby 里的绝对路径前缀
+  # 顺序不重要，程序会自动优先匹配最长路径
+  - name: "Anime"
+    url: "https://stream-anime.example.com/stream"
+    path: "/mnt/anime"
 
-  # 后端 2: 电影
-  - name: "MovieBackend"
-    url: "https://stream-movie.example.com/stream"
+  - name: "Movies"
+    url: "https://stream-movies.example.com/stream"
     path: "/mnt/movies"
-  
-  # 后端 3: 兜底或其他硬盘
-  - name: "GeneralBackend"
-    url: "https://stream-general.example.com/stream"
-    path: "/mnt/share"
 
-# Streaming configuration
-PlayURLMaxAliveTime: 21600 
+  - name: "GoogleDrive"
+    url: "https://stream-gd.example.com/stream"
+    path: "/mnt/gd"
 
-# Server configuration
+PlayURLMaxAliveTime: 21600
 Server:
   port: 60001
 
-# Special medias configuration
 SpecialMedias:
   - key: "MediaMissing"
     name: "Default media for missing cases"
     mediaPath: "specialMedia/mediaMissing"
-    itemId: "mediaMissing-item-id"
-    mediaSourceID: "mediaMissing-media-source-id"
-  - key: "September18"
-    name: "September 18 - Commemorative Media"
-    mediaPath: "specialMedia/september18"
-    itemId: "september18-item-id"
-    mediaSourceID: "september18-media-source-id"
-  - key: "October1"
-    name: "October 1 - National Day Media"
-    mediaPath: "specialMedia/october1"
-    itemId: "october1-item-id"
-    mediaSourceID: "october1-media-source-id"
-  - key: "December13"
-    name: "December 13 - Nanjing Massacre Commemoration"
-    mediaPath: "specialMedia/december13"
-    itemId: "december13-item-id"
-    mediaSourceID: "december13-media-source-id"
-  - key: "ChineseNewYearEve"
-    name: "Chinese New Year's Eve Media"
-    mediaPath: "specialMedia/chinesenewyeareve"
-    itemId: "chinesenewyeareve-item-id"
-    mediaSourceID: "chinesenewyeareve-media-source-id"
+    itemId: "mediaMissing-id"
+    mediaSourceID: "mediaMissing-source-id"
