@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/sync/singleflight" // 需 go get
-	"io"
 	"net/http"
 	"net/url"
 	"os"
