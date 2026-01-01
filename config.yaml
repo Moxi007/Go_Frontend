@@ -1,22 +1,35 @@
 # Logging configuration
-LogLevel: "INFO" # Log level (e.g., info, debug, warn, error)
+LogLevel: "INFO" 
 
 # Encryption settings
-Encipher: "vPQC5LWCN2CW2opz" # Key used for encryption and obfuscation
+Encipher: "vPQC5LWCN2CW2opz"
 
 # Emby server configuration
 Emby:
-  url: "http://127.0.0.1" # The base URL for the Emby server
+  url: "http://127.0.0.1" 
   port: 8096
-  apiKey: "6a15d65893024675ba89ffee165f8f1c"  # API key for accessing the Emby server
+  apiKey: "6a15d65893024675ba89ffee165f8f1c" 
 
-# Backend streaming configuration
-Backend:
-  url: "https://streamer.xxxxxxxx.com/stream" # The backend URL for streaming service
-  storageBasePath: "/mnt/anime"
+# --- 修改: 多后端配置 ---
+# 这里是一个数组，可以配置多个后端。程序会按顺序尝试匹配。
+Backends:
+  # 后端 1: 动漫
+  - name: "AnimeBackend"
+    url: "https://stream-anime.example.com/stream" # 该资源的推流地址
+    path: "/mnt/anime"                             # Emby 里的绝对路径前缀
+
+  # 后端 2: 电影
+  - name: "MovieBackend"
+    url: "https://stream-movie.example.com/stream"
+    path: "/mnt/movies"
+  
+  # 后端 3: 兜底或其他硬盘
+  - name: "GeneralBackend"
+    url: "https://stream-general.example.com/stream"
+    path: "/mnt/share"
 
 # Streaming configuration
-PlayURLMaxAliveTime: 21600 # Maximum lifetime of the play URL in seconds (e.g., 6 hours)
+PlayURLMaxAliveTime: 21600 
 
 # Server configuration
 Server:
