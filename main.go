@@ -10,6 +10,9 @@ import (
 	"log"
 	"os"
 	"strconv"
+
+    // ✅ 优化: 自动适配容器 CPU
+	_ "go.uber.org/automaxprocs"
 )
 
 // initializeConfig initializes the configuration from the config file.
@@ -94,7 +97,7 @@ func startServer(r *gin.Engine) error {
 func handleRequest(configFile string) error {
 	logger.SetDefaultLogger()
 	logger.Info("\n-----------------------------------------------\n")
-	logger.Info("Start request handle.")
+	logger.Info("Start request handle (Optimized).")
 
 	if err := initializeConfig(configFile); err != nil {
 		return err
@@ -104,9 +107,6 @@ func handleRequest(configFile string) error {
 	if err := startServer(r); err != nil {
 		return err
 	}
-
-	logger.Info("Request handling completed successfully.")
-	logger.Info("\n-----------------------------------------------\n")
 	return nil
 }
 
